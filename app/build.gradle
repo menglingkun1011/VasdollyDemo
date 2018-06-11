@@ -1,0 +1,62 @@
+apply plugin: 'com.android.application'
+apply plugin: 'channel'
+
+android {
+    signingConfigs {
+        config {
+            keyAlias 'demo'
+            keyPassword '123456'
+            storeFile file('../keys/demo.jks')
+            storePassword '123456'
+        }
+    }
+    compileSdkVersion 27
+    defaultConfig {
+        applicationId "com.example.idmin.vasdollydemo"
+        minSdkVersion 15
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
+        }
+        debug {
+            minifyEnabled false
+            signingConfig signingConfigs.config
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.1'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    api 'com.leon.channel:helper:2.0.1'
+}
+channel{
+    //指定渠道文件
+    channelFile = file("../channel/channel.txt")
+}
+rebuildChannel{
+
+    //指定渠道文件
+    channelFile = file("../channel/channel.txt")
+    baseDebugApk = new File(project.projectDir, "outputs/apk/debug/app-debug.apk")//debug 基准包
+    baseReleaseApk = new File("../channel/app-release.apk")//release 基准包
+    //默认为new File(project.buildDir, "rebuildChannel/debug")
+//    debugOutputDir = Debug渠道包输出目录
+    //默认为new File(project.buildDir, "rebuildChannel/release")
+//    releaseOutputDir = Release渠道包输出目录
+    //快速模式：生成渠道包时不进行校验（速度可以提升10倍以上，默认为false）
+    isFastMode = true
+    //低内存模式（仅针对V2签名，默认为false）：只把签名块、中央目录和EOCD读取到内存，不把最大头的内容块读取到内存，在手机上合成APK时，可以使用该模式
+    lowMemory = true
+}
